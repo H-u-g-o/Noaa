@@ -41,11 +41,9 @@ class Noaa:
             n.getYear()
             liste_df.append(n.getStation())
         all_data_df = pd.concat(liste_df, ignore_index=True)
-        columns = ['STN','WBAN','YEARMODA','TEMP','COUNT_1','DEWP','COUNT_2','SLP','COUNT_3','STP','COUNT_4','VISIB','COUNT_5','WDSP','COUNT_6','MXSPD','GUST','MAX','MIN','PRCP','SNDP','FRSHTT']
-        all_data_df.columns=columns
         all_data_df = DataClean(all_data_df)
         all_data_df = all_data_df.main()
-        return print(all_data_df.info())
+        return print(all_data_df.head())
 
 
 class DataClean:
@@ -54,9 +52,14 @@ class DataClean:
         self.df = df
 
     def main(self):
+        self.nameCol()
         self.no_data()
         self.celsius()
         return self.df
+
+    def nameCol(self):
+        columns = ['STN','WBAN','YEARMODA','TEMP','COUNT_1','DEWP','COUNT_2','SLP','COUNT_3','STP','COUNT_4','VISIB','COUNT_5','WDSP','COUNT_6','MXSPD','GUST','MAX','MIN','PRCP','SNDP','FRSHTT']
+        self.df.columns=columns
 
     def no_data(self):
         "Remplacement des données manquantes par Nan"
