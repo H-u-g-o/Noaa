@@ -40,8 +40,47 @@ class Noaa:
             n = getDf(i, self.station )
             n.getYear()
             liste_df.append(n.getStation())
-            print(liste_df)
-        all_data = pd.concat(liste_df, ignore_index=True)
+        all_data_df = pd.concat(liste_df, ignore_index=True)
         columns = ['STN','WBAN','YEARMODA','TEMP','COUNT_1','DEWP','COUNT_2','SLP','COUNT_3','STP','COUNT_4','VISIB','COUNT_5','WDSP','COUNT_6','MXSPD','GUST','MAX','MIN','PRCP','SNDP','FRSHTT']
-        all_data.columns=columns
-        return all_data
+        all_data_df.columns=columns
+        all_data_df = DataClean(all_data_df)
+        all_data_df = all_data_df.main()
+        return print(all_data_df.info())
+
+
+class DataClean:
+
+    def __init__(self, df):
+        self.df = df
+
+    def main(self):
+        self.no_data()
+        self.celsius()
+        return self.df
+
+    def no_data(self):
+        "Remplacement des données manquantes par Nan"
+        self.df['TEMP'] = self.df['TEMP'].replace(9999.9, np.nan)
+        self.df['DEWP'] = self.df['DEWP'].replace(9999.9, np.nan)
+        self.df['SLP'] = self.df['SLP'].replace(9999.9, np.nan)
+        self.df['STP'] = self.df['STP'].replace(9999.9, np.nan)
+        self.df['VISIB'] = self.df['VISIB'].replace(999.9, np.nan)
+        self.df['WDSP'] = self.df['WDSP'].replace(999.9, np.nan)
+        self.df['MXSPD'] = self.df['MXSPD'].replace(999.9, np.nan)
+        self.df['GUST'] = self.df['GUST'].replace(999.9, np.nan)
+        self.df['MAX'] = self.df['MAX'].replace(9999.9, np.nan)
+        self.df['MIN'] = self.df['MIN'].replace(9999.9, np.nan)
+        self.df['PRCP'] = self.df['PRCP'].replace(99.9, np.nan)
+        self.df['SNDP'] = self.df['SNDP'].replace(999.9, np.nan)
+
+    def celsius(self):
+        '''Conversion de la température en degré Celsius'''
+        self.df['TEMP'] = self.df['TEMP'].replace("*", "")
+        self.df['Temp_C'] = (self.df['TEMP'] - 32) / 1.8
+
+    def conver_date(self):
+        '''Conversion de la colonne TEMP en format date'''
+        pass
+
+n = Noaa()
+n.getSeveralyear()
