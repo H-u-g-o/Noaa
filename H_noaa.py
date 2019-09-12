@@ -55,6 +55,7 @@ class DataClean:
         self.nameCol()
         self.no_data()
         self.celsius()
+        self.removeSymbol()
         return self.df
 
     def nameCol(self):
@@ -62,7 +63,7 @@ class DataClean:
         self.df.columns=columns
 
     def no_data(self):
-        "Remplacement des données manquantes par Nan"
+        """Remplacement des données manquantes par Nan"""
         self.df['TEMP'] = self.df['TEMP'].replace(9999.9, np.nan)
         self.df['DEWP'] = self.df['DEWP'].replace(9999.9, np.nan)
         self.df['SLP'] = self.df['SLP'].replace(9999.9, np.nan)
@@ -76,14 +77,15 @@ class DataClean:
         self.df['PRCP'] = self.df['PRCP'].replace(99.9, np.nan)
         self.df['SNDP'] = self.df['SNDP'].replace(999.9, np.nan)
 
+    def removeSymbol(self):
+        """Remove unwanted symbols"""
+        self.df['MAX'] = self.df['MAX'].apply(lambda x: x.replace('*',''))
+        self.df['MIN'] = self.df['MIN'].apply(lambda x: x.replace('*',''))
+
     def celsius(self):
-        '''Conversion de la température en degré Celsius'''
-        self.df['TEMP'] = self.df['TEMP'].replace("*", "")
+        """Conversion de la température en degré Celsius"""
         self.df['Temp_C'] = (self.df['TEMP'] - 32) / 1.8
 
-    def conver_date(self):
-        '''Conversion de la colonne TEMP en format date'''
-        pass
 
 n = Noaa()
 n.getSeveralyear()
