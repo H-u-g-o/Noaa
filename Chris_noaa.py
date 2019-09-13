@@ -246,9 +246,6 @@ essai_group.graphGroupir()
 
 ###################################################################
 
-# TO DO
-# DF_temp> convertir en date puis passer en index
-# créer DF commun temp+conso
 
 
 # Si temps
