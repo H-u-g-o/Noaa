@@ -203,20 +203,18 @@ class visu:
 
 
 # LANCEMENT CLASS NOAA : CREATION  CSV + DF CORRESPONDANT
-# Temp = Noaa(2013,2017,"071560-99999")
-# df = Temp.getSeveralyear()
-# print(df.head())
+Temp = Noaa(2013,2017,"071560-99999")
+df = Temp.getSeveralyear()
 
 # LANCEMENT CLASS VISUTEMP : CREATION GRAPH TEMPERATURE
-# graph_temp = visu("2013_2017_071560-99999.csv")
-# graph_temp.dataframe()
-# graph_temp.graphTemp()
+graph_temp = visu("2013_2017_071560-99999.csv")
+graph_temp.dataframe()
+graph_temp.graphTemp()
 
 
 # LANCEMENT CLASS RTE : CREATION  CSV + DF CORRESPONDANT
 Test1 = Rte(2015,2016)
 df1 = Test1.getSeveralyear()
-print(df1.head())
 
 # LANCEMENT CLASS VISUTEMP : CREATION GRAPH TEMPERATURE
 graph_temp = visu("2015_2016_consoRTE.csv")
@@ -226,14 +224,12 @@ graph_temp.graphConso()
 
 
 
-# DF_conso
-# > fonction plusieurs années
-# > index en série temporelle ?
 
-# DF_temp
-# > convertir en date puis la passer en index
+# TO DO
+# DF_temp> convertir en date puis passer en index
+# créer DF commun temp+conso
 
 
-# si temps
-# date en index à faire par année et pas date à date
+# Si temps
+# sur graph abscisse à faire par année et pas date à date
 # fonction pour avoir le nom de la station avec son numéro
