@@ -12,9 +12,10 @@ import gzip
 
 class getDf:
 
-    def __init__(self, year, station):
+    def __init__(self, year, station, region):
         self.year = str(year)
         self.station = str(station)
+        self.region = str(region)
 
     def getYear(self):
         with tarfile.open('./gsod_all_years/gsod_'+self.year+'.tar') as tar:
@@ -27,22 +28,23 @@ class getDf:
         return station_df
 
     def getConso(self):
-        conso_df = pd.read_table('RTE/eCO2mix_RTE_Ile-de-France_Annuel-Definitif_'+self.year+ '.xls', encoding='ISO-8859-1', skiprows=1, header=None)
+        conso_df = pd.read_table('RTE/eCO2mix_RTE_'+self.region+'_Annuel-Definitif_'+self.year+ '.xls', encoding='ISO-8859-1', skiprows=1, header=None)
         return conso_df
 
 class Noaa:
 
-    def __init__(self, yearBegin=2016, yearEnd=2017, station="071560-99999"):
+    def __init__(self, yearBegin=2016, yearEnd=2017, station="071560-99999", region="PACA"):
         self.yearBegin = int(yearBegin)
         self.yearEnd = int(yearEnd)
         self.station = str(station)
+        self.region = str(region)
 
     def getSeveralyear(self):
         liste_df = []
         liste_df_conso = []
 
         for i in range (self.yearBegin, self.yearEnd+1):
-            n = getDf(i, self.station )
+            n = getDf(i, self.station, self.region )
             n.getYear()
             liste_df.append(n.getStation())
             n.getConso()
