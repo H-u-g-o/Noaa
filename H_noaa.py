@@ -26,21 +26,28 @@ class getDf:
                 station_df = pd.read_csv(station_file, delim_whitespace = True, header=None)
         return station_df
 
+    def getConso(self):
+        conso_df = pd.read_table('RTE/eCO2mix_RTE_Ile-de-France_Annuel-Definitif_'+self.year+ '.xls', encoding='ISO-8859-1', skiprows=1, header=None)
+        return conso_df
 
 class Noaa:
 
-    def __init__(self, yearBegin=2018, yearEnd=2019, station="071560-99999"):
+    def __init__(self, yearBegin=2016, yearEnd=2017, station="071560-99999"):
         self.yearBegin = int(yearBegin)
         self.yearEnd = int(yearEnd)
         self.station = str(station)
 
     def getSeveralyear(self):
         liste_df = []
+        liste_df_conso = []
         for i in range (self.yearBegin, self.yearEnd+1):
             n = getDf(i, self.station )
             n.getYear()
             liste_df.append(n.getStation())
+            n.getConso()
+            liste_df_conso.append(n.getConso())
         all_data_df = pd.concat(liste_df, ignore_index=True)
+        all_data_c = pd.concat(liste_df_conso, ignore_index=True)
         all_data_df = DataClean(all_data_df)
         all_data_df = all_data_df.main()
         return print(all_data_df.head())
@@ -56,6 +63,8 @@ class DataClean:
         self.no_data()
         self.celsius()
         self.removeSymbol()
+        self.conver_date()
+        self.index_date()
         return self.df
 
     def nameCol(self):
@@ -84,7 +93,16 @@ class DataClean:
 
     def celsius(self):
         """Conversion de la température en degré Celsius"""
-        self.df['Temp_C'] = (self.df['TEMP'] - 32) / 1.8
+        self.df['Temp_C'] = round((self.df['TEMP'] - 32) / 1.8)
+
+    def conver_date(self):
+        '''Conversion de la colonne TEMP en format date'''
+        self.df["YEARMODA"] = pd.to_datetime(self.df["YEARMODA"], format='%Y%m%d')
+        self.df = self.df.rename(columns={"YEARMODA": "Date"})
+
+    def index_date(self):
+        '''Passe la col date en index'''
+        self.df = self.df.set_index('Date')
 
 
 n = Noaa()
