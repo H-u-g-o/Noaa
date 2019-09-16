@@ -140,7 +140,7 @@ class Noaa:
         # appelle de la class DataClean
         all_data_df = DataCleanT(all_data_df)
         all_data_df = all_data_df.main()
-        all_data_df.to_csv(str(self.yearBegin)+'_'+str(self.yearEnd)+'_'+str(self.station)+'.csv')
+        #all_data_df.to_csv(str(self.yearBegin)+'_'+str(self.yearEnd)+'_'+str(self.station)+'.csv')
         return all_data_df
 
 
@@ -162,7 +162,7 @@ class Rte:
         # appelle de la class DataClean
         all_data_c = DataCleanC(all_data_c)
         all_data_c = all_data_c.main()
-        all_data_c.to_csv(str(self.yearBegin)+'_'+str(self.yearEnd)+str(self.region)+'.csv')
+        #all_data_c.to_csv(str(self.yearBegin)+'_'+str(self.yearEnd)+'_'+str(self.region)+'.csv')
         return all_data_c
 
 
@@ -211,7 +211,7 @@ class Visu:
         plt.ylabel('\nConsommation', fontsize=18)
         fig.legend(labels=['Températures', 'Consommation'],fontsize=18)
         plt.title('Températures & Consommation\n', fontsize=24, fontweight=600)
-        plt.savefig('VISUprojet/' + 'CetT_' + self.csv + '.png')
+        plt.savefig('VISUprojet/' + self.csv + '.png')
 
 
 class DataFinal:
@@ -245,14 +245,23 @@ class MegaClass:
         dft = t.getSeveralyear()
         dff = DataFinal(self.yearBegin, self.yearEnd, dft, dfc, self.region)
         dff = dff.mergeDf()
-        v = Visu((str(self.yearBegin) +'_'+ str(self.yearEnd) +'_' + self.region +'.csv'))
+        v = Visu(str(self.yearBegin) +'_'+ str(self.yearEnd) +'_' + self.region +'.csv')
         v.graphGroupir()
 
 
-m = MegaClass(2014, 2017, "071560-99999", "Ile-de-France")
+m = MegaClass(2014, 2017, "072220-99999", "Pays-de-la-Loire")
 m.main()
 
 
-# PARIS = 071560-99999
-# AVIGNON = 075630-99999
-# REGIONS = "Ile-de-France", "PACA"
+# PARIS = 071560-99999                  // Ile-de-France
+# AVIGNON = 075630-99999                // PACA
+# AIX LES BAINS = 074910-99999          // ARA
+# REIMS = 070720-99999                  // Grand-Est
+# PAU = 076100-99999                    // Nouvelle-Aquitaine
+# BESANCON = 072880-99999               // Bourgogne-Franche-Comté
+# VANNES/SENE = 072100-99999            // Bretagne
+# BOURGES = 072550-99999                // Centre-Val-de-Loire
+# MONTAUBAN = 075400-99999              // Occitanie
+# CALAIS/DUNKERQUE = 70090-99999        // Hauts-de-France
+# LE HAVRE-OCTEVILLE = 070460-99999     // Normandie
+# NANTES ATLANTIQUE = 072220-99999      // Pays-de-la-Loire
