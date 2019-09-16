@@ -51,13 +51,13 @@ class DataClean:
         return self.df
 
     def celsius(self):
-        "Conversion de la température en degré Celsius"
+        '''Conversion de la température en degré Celsius'''
         self.df['TEMP'] = self.df['TEMP'].replace("*", "")
         self.df['Temp_C'] = (self.df['TEMP'] - 32) / 1.8
         return self.df
 
     def conver_date(self):
-        "Conversion de la colonne TEMP en format date"
+        '''Conversion de la colonne TEMP en format date'''
         pass
 
 
