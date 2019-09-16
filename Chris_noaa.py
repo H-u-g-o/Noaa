@@ -33,37 +33,6 @@ class dfExls:
         return conso_df
 
 
-class DataCleanC:
-    '''Class spécifique Conso - Nettoyage Data'''
-    def __init__(self,df):
-        self.df = df
-
-    def main(self):
-        '''Lancement automatique de l'ensemble des méthodes'''
-        self.col()
-        self.drop_col()
-        self.index_date()
-        return self.df
-
-    def col(self):
-        '''Attribution noms des colonnes'''
-        col = ['Périmètre', 'Nature', 'Date', 'Heures', 'Consommation', 'Thermique',
-               'Nucléaire', 'Eolien', 'Solaire', 'Hydraulique', 'Pompage',
-               'Bioénergies', 'Ech. physiques', 'exit']
-        self.df.columns=col
-
-    def drop_col(self):
-        '''Suppression col inutiles'''
-        self.df = self.df.drop(columns=['exit'])
-        self.df = self.df.drop(columns=['Heures'])
-
-    def index_date(self):
-        '''Groupby date   +  index=date'''
-        self.df = round(self.df.groupby('Date').mean(), 2)
-        self.df = self.df.reset_index()
-        self.df["Date"] = pd.to_datetime(self.df["Date"], format='%Y-%m-%d')
-
-
 class DataCleanT:
     '''Class spécifique Températures - Nettoyage Data'''
     def __init__(self,df):
@@ -120,8 +89,39 @@ class DataCleanT:
         self.df = self.df.set_index('YEARMODA')
 
 
+class DataCleanC:
+    '''Class spécifique Conso - Nettoyage Data'''
+    def __init__(self,df):
+        self.df = df
+
+    def main(self):
+        '''Lancement automatique de l'ensemble des méthodes'''
+        self.col()
+        self.drop_col()
+        self.index_date()
+        return self.df
+
+    def col(self):
+        '''Attribution noms des colonnes'''
+        col = ['Périmètre', 'Nature', 'Date', 'Heures', 'Consommation', 'Thermique',
+               'Nucléaire', 'Eolien', 'Solaire', 'Hydraulique', 'Pompage',
+               'Bioénergies', 'Ech. physiques', 'exit']
+        self.df.columns=col
+
+    def drop_col(self):
+        '''Suppression col inutiles'''
+        self.df = self.df.drop(columns=['exit'])
+        self.df = self.df.drop(columns=['Heures'])
+
+    def index_date(self):
+        '''Groupby date   +  index=date'''
+        self.df = round(self.df.groupby('Date').mean(), 2)
+        self.df = self.df.reset_index()
+        self.df["Date"] = pd.to_datetime(self.df["Date"], format='%Y-%m-%d')
+
+
 class Noaa:
-    '''Class spécifique Températures'''
+    '''Class spécifique Températures - création DF clean'''
     def __init__(self, yearBegin, yearEnd, station):
         self.yearBegin = int(yearBegin)
         self.yearEnd = int(yearEnd)
@@ -144,7 +144,7 @@ class Noaa:
 
 
 class Rte:
-    '''Class spécifique Températures'''
+    '''Class spécifique Températures _ création DF clean'''
     def __init__(self, yearBegin, yearEnd):
         self.yearBegin = int(yearBegin)
         self.yearEnd = int(yearEnd)
@@ -197,7 +197,7 @@ class Visu:
         plt.savefig('VISUprojet/' +'Conso_'+ self.csv + '.png')
 
     def graphGroupir(self):
-        '''Graph de l'évolution de la température'''
+        '''Graph de l'évolution température + conso énergie'''
         self.df = pd.read_csv(self.csv)
         fig = plt.figure(figsize=(20, 12))
         sns.lineplot(x="Date", y="Temp_C", data=self.df, color="indianred")
@@ -209,25 +209,38 @@ class Visu:
         plt.ylabel('\nConsommation', fontsize=18)
         fig.legend(labels=['Températures', 'Consommation'],fontsize=18)
         plt.title('Températures & Consommation\n', fontsize=24, fontweight=600)
-        plt.savefig('VISUprojet/' + 'Groupir2_' + self.csv + '.png')
+        plt.savefig('VISUprojet/' + 'CetT_' + self.csv + '.png')
+
+class DataFinal:
+    '''Class globale - création CSV groupé final'''
+    def __init__(self, yearBegin, yearEnd, df1, df2):
+        self.yearBegin = yearBegin
+        self.yearEnd = yearEnd
+        self.df1 = df1
+        self.df2 = df2
+
+    def mergeDf(self):
+        dfDef = pd.merge(self.df1, self.df2, on='Date', how='inner')
+        dfDef.to_csv(str(self.yearBegin) +'_'+ str(self.yearEnd) +'.csv')
+        return dfDef
 
 
 # LANCEMENT CLASS NOAA : CREATION  CSV + DF CORRESPONDANT
-Temp = Noaa(2015,2017,"071560-99999")
+Temp = Noaa(2014,2017,"071560-99999")
 df = Temp.getSeveralyear()
 
 # LANCEMENT CLASS RTE : CREATION  CSV + DF CORRESPONDANT
-Test1 = Rte(2015,2017)
+Test1 = Rte(2014,2017)
 df1 = Test1.getSeveralyear()
 
-# MERGE DES 2 DF + RE-INDEX  =========> A passer dans une class et/ou fonctions
-dfGroupir = pd.merge(df, df1, on='Date', how='inner')
-dfGroupir .to_csv('test-groupir.csv')
+# LANCEMENT CLASS DATAFINAL : CREATION  CSV + DF CORRESPONDANT
+dfGroupir = DataFinal(2014, 2017, df, df1)
+dfGroupir.mergeDf()
 
-# LANCEMENT CLASS VISU : CREATION GRAPH COMPLET
-essai_group = Visu('test-groupir.csv')
-essai_group.dataframe()
-essai_group.graphGroupir()
+#LANCEMENT CLASS VISU : CREATION GRAPH COMPLET
+visu_group = Visu('2014_2017.csv')
+visu_group.dataframe()
+visu_group.graphGroupir()
 
 
 
@@ -247,7 +260,8 @@ essai_group.graphGroupir()
 ###################################################################
 
 
-
-# Si temps
+# Si temps :
+# class globale qui lance toutes les autres
 # sur graph abscisse à faire par année et pas date à date
 # fonction pour avoir le nom de la station avec son numéro
+# excel RTE des différentes régions
