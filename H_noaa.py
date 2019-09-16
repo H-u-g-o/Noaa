@@ -40,17 +40,27 @@ class Noaa:
     def getSeveralyear(self):
         liste_df = []
         liste_df_conso = []
+
         for i in range (self.yearBegin, self.yearEnd+1):
             n = getDf(i, self.station )
             n.getYear()
             liste_df.append(n.getStation())
             n.getConso()
             liste_df_conso.append(n.getConso())
+
         all_data_df = pd.concat(liste_df, ignore_index=True)
         all_data_c = pd.concat(liste_df_conso, ignore_index=True)
+
         all_data_df = DataClean(all_data_df)
         all_data_df = all_data_df.main()
-        return print(all_data_df.head())
+
+        all_data_c = DataCleanConso(all_data_c)
+        all_data_c = all_data_c.main()
+
+        all_data_final = pd.merge(all_data_df, all_data_c, on='Date', how='inner')
+        all_data_final.to_csv(str(self.yearBegin) +'_'+ str(self.yearEnd) +'.csv')
+
+        return print(all_data_final.head())
 
 
 class DataClean:
@@ -104,6 +114,33 @@ class DataClean:
         '''Passe la col date en index'''
         self.df = self.df.set_index('Date')
 
+class DataCleanConso:
+    '''Class spécifique Conso - Nettoyage Data'''
+    def __init__(self,df):
+        self.df = df
+
+    def main(self):
+        '''Lancement automatique de l'ensemble des méthodes'''
+        self.col()
+        self.drop_col()
+        self.index_date()
+        return self.df
+
+    def col(self):
+        '''Attribution noms des colonnes'''
+        col = ['Périmètre', 'Nature', 'Date', 'Heures', 'Consommation', 'Thermique','Nucléaire', 'Eolien', 'Solaire', 'Hydraulique', 'Pompage','Bioénergies', 'Ech. physiques', 'exit']
+        self.df.columns=col
+
+    def drop_col(self):
+        '''Suppression col inutiles'''
+        self.df = self.df.drop(columns=['exit'])
+        self.df = self.df.drop(columns=['Heures'])
+
+    def index_date(self):
+        '''Groupby date   +  index=date'''
+        self.df = round(self.df.groupby('Date').mean(), 2)
+        self.df = self.df.reset_index()
+        self.df["Date"] = pd.to_datetime(self.df["Date"], format='%Y-%m-%d')
 
 n = Noaa()
 n.getSeveralyear()
